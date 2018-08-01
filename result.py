@@ -36,7 +36,8 @@ f.close()
 
 Weituo_here = pd.read_excel("./result_weituo.xlsx")
 for inx in range(0, len(Weituo_here.stockname)):
-    Weituo_here.iat[inx, 0] = Weituo_here.stockname[inx].split('.')[0]  # 把.SZ和.SH的字样去掉.
+    # Weituo_here.iat[inx, 0] = Weituo_here.stockname[inx].split('.')[0]  # 把.SZ和.SH的字样去掉.
+	Weituo_here.iat[inx, 0] = Weituo_here.stockname[inx][0:6]
     Weituo_here.iat[inx, 6] = Weituo_here.account[inx].split('.')[0]  # 把account的.S字样去掉.
 Weituo_ins = pd.DataFrame({'stockname': ['000001.SZ'], 'bianhao': ['100'], 'amount': [0], 'money': [0.0], 'price': [0.0], 'buysell': [0], 'account': ['1092.S'], 'time': ['11:08']})
 Weituo_ins = Weituo_ins[['stockname', 'bianhao', 'amount', 'money', 'price', 'buysell', 'account', 'time']]
