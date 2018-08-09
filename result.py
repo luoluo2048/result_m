@@ -55,6 +55,8 @@ while 1:
         iftrade = 1
     elif nowtime[3] == 11 and nowtime[4] < 30:
         iftrade = 1
+    elif nowtime[3] == 14 and nowtime[4] > 57:
+        iftrade = 0
     if iftrade == 0:
         print "Non Trading time, waiting ..."
         print time.strftime("%Y%m%d %H:%M:%S", time.localtime())
