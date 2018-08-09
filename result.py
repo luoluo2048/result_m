@@ -278,7 +278,7 @@ while 1:
             if Stockname[0] in ['0', '1', '2', '3']:
                 errinfo, count, result = clientHq.GetSecurityQuotes([(0, Stockname)])
             if errinfo != "":
-                print >> result_log, errinfo
+                print >> f, errinfo
             else:
 
                 temp1 = result.split("\n")
@@ -505,7 +505,7 @@ while 1:
         SL4 = pd.merge(S_L_index, SL4, how='outer', on='stocknum')
         indexhere = indexhere - 1
     if account_num > 3:  # 产品
-        SL4.columns = ['stocknum', 'QD_ZT', 'H3_HL', 'H6_ZS', 'H9_ZT', 'H6_ZT', 'H9_ZX', 'H6_GD']
+        SL4.columns = ['stocknum', 'H3_HL', 'H6_ZS', 'H9_ZT', 'H6_ZT', 'H9_ZX', 'H6_GD']
     if account_num <= 3:  # 委外
         SL4.columns = ['stocknum', 'DM_ZT', 'RY_ZT']
     # exlist = list(SL4.stocknum)
