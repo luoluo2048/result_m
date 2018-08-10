@@ -58,11 +58,11 @@ while 1:
         iftrade = 1
     elif nowtime[3] == 14 and nowtime[4] > 57:
         iftrade = 0
-    # if iftrade == 0:
-    #     print "Non Trading time, waiting ..."
-    #     print time.strftime("%Y%m%d %H:%M:%S", time.localtime())
-    #     time.sleep(30)
-    #     continue  # 如果非交易时间测试下单程序，需要#掉这个continue语句。
+    if iftrade == 0:
+        print "Non Trading time, waiting ..."
+        print time.strftime("%Y%m%d %H:%M:%S", time.localtime())
+        time.sleep(30)
+        continue  # 如果非交易时间测试下单程序，需要#掉这个continue语句。
 
     Stock_buy = read_csv("./result_send.csv", dtype={'stockname': str})
     # 从csv文件读取建仓目标
