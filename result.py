@@ -15,6 +15,7 @@ from pandas import DataFrame, read_csv
 Account = pd.read_excel("account.xlsx")
 account_num = len(list(Account.nQsid))
 HostHq = pd.read_excel("HostHq.xlsx")
+HostHq_num = len(list(HostHq.port))
 
 for inx in range(0, account_num):
     Account.iat[inx, 7] = Account.sAccountNo[inx].split('.')[0]  # 把.S的后缀去掉.
@@ -57,11 +58,11 @@ while 1:
         iftrade = 1
     elif nowtime[3] == 14 and nowtime[4] > 57:
         iftrade = 0
-    if iftrade == 0:
-        print "Non Trading time, waiting ..."
-        print time.strftime("%Y%m%d %H:%M:%S", time.localtime())
-        time.sleep(30)
-        continue  # 如果非交易时间测试下单程序，需要#掉这个continue语句。
+    # if iftrade == 0:
+    #     print "Non Trading time, waiting ..."
+    #     print time.strftime("%Y%m%d %H:%M:%S", time.localtime())
+    #     time.sleep(30)
+    #     continue  # 如果非交易时间测试下单程序，需要#掉这个continue语句。
 
     Stock_buy = read_csv("./result_send.csv", dtype={'stockname': str})
     # 从csv文件读取建仓目标
@@ -88,7 +89,19 @@ while 1:
 
     print >> f, "1、初始化TDX...\n"
     TradeX.OpenTdx(14, "6.40", 12, 0)
-    clientHq = TradeX.TdxHq_Connect(HostHq.iloc[0, 0], int(HostHq.iloc[0, 1]))
+
+    index_host = 0
+    while index_host < HostHq_num:
+        sHost = HostHq.iloc[index_host, 0]
+        nPort = int(HostHq.iloc[index_host, 1])
+        try:
+            clientHq = TradeX.TdxHq_Connect(sHost, nPort)
+        except TradeX.TdxHq_error, e:
+            print >> f, index_host
+            print >> f, "switch to next HostHq"
+            index_host = index_host + 1
+            continue
+        break
 
     StockValue_all = DataFrame(np.zeros((1, 5)), index=['a'], columns=['stocknum', 'ratio', 'asset', 'amount', 'account'])
     # StockValue_all用于存储各个账号的持仓
