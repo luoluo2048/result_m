@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
-#zsy for test github
+
 import msvcrt
 import sys
 import TradeX2 as TradeX
@@ -15,6 +15,7 @@ from pandas import DataFrame, read_csv
 Account = pd.read_excel("account.xlsx")
 account_num = len(list(Account.nQsid))
 HostHq = pd.read_excel("HostHq.xlsx")
+HostHq_num = len(list(HostHq.port))
 
 for inx in range(0, account_num):
     Account.iat[inx, 7] = Account.sAccountNo[inx].split('.')[0]  # 把.S的后缀去掉.
@@ -39,6 +40,7 @@ f.close()
 Weituo_here = pd.read_excel("./result_weituo.xlsx")
 for inx in range(0, len(Weituo_here.stockname)):
     Weituo_here.iat[inx, 0] = Weituo_here.stockname[inx].split('.')[0]  # 把.SZ和.SH的字样去掉.
+	# Weituo_here.iat[inx, 0] = Weituo_here.stockname[inx][0:6]
     Weituo_here.iat[inx, 6] = Weituo_here.account[inx].split('.')[0]  # 把account的.S字样去掉.
 Weituo_ins = pd.DataFrame({'stockname': ['000001.SZ'], 'bianhao': ['100'], 'amount': [0], 'money': [0.0], 'price': [0.0], 'buysell': [0], 'account': ['1092.S'], 'time': ['11:08']})
 Weituo_ins = Weituo_ins[['stockname', 'bianhao', 'amount', 'money', 'price', 'buysell', 'account', 'time']]
@@ -87,8 +89,20 @@ while 1:
 
     print >> f, "1、初始化TDX...\n"
     TradeX.OpenTdx(14, "6.40", 12, 0)
-    clientHq = TradeX.TdxHq_Connect(HostHq.iloc[0,0], int(HostHq.iloc[0,1]))
-    
+
+    index_host = 0
+    while index_host < HostHq_num:
+        sHost = HostHq.iloc[index_host, 0]
+        nPort = int(HostHq.iloc[index_host, 1])
+        try:
+            clientHq = TradeX.TdxHq_Connect(sHost, nPort)
+        except TradeX.TdxHq_error, e:
+            print >> f, index_host
+            print >> f, "switch to next HostHq"
+            index_host = index_host + 1
+            continue
+        break
+
     StockValue_all = DataFrame(np.zeros((1, 5)), index=['a'], columns=['stocknum', 'ratio', 'asset', 'amount', 'account'])
     # StockValue_all用于存储各个账号的持仓
 
@@ -253,63 +267,46 @@ while 1:
             # 即Sendprice小于x_price，或者Sendprice大于y_price，则不下单继续循环等待。
             # buysell_1用作读取result_send.csv里面的买卖方向。如果不为0或1，则最终下单以它为准。券商服务器一般默认buysell参数是1为卖，0为买。
 
+            # status, content = client.GetQuote((Stockname))
+            # if status < 0:
+            #     print "error_d: " + content.decode('GBK')
+            # else:
+            #     # print content.decode('GBK')
+            #     msvcrt.getch()
+            #     temp1 = content.split('\n')
+            #     temp2 = temp1[1].split('\t')
+            #     Nowprice = float(temp2[5])  # nQsid=36, temp2[5]为当前价
+            #     Yesprice = float(temp2[2])  # 昨收价
+            #     if nQsid in [36, 16, 32, 28]:
+            #         buy_5p = temp2[6:11]  # 买一至买五的价格，string,[0]是买一价
+            #         buy_5v = temp2[11:16]  # 买五量，string，[0]是买一量
+            #         sell_5p = temp2[16:21]  # 卖五价格，string,[4]是卖五价
+            #         sell_5v = temp2[21:26]  # 卖五量，string
+            #     if nQsid == 43:  # 华林
+            #         buy_5p = temp2[6:9] + temp2[18:20]  # 买一至买五的价格，buy_5p[0]是买一价
+            #         buy_5v = temp2[9:12] + temp2[20:22]  # 买五量，string，buy_5v[0]是买一量
+            #         sell_5p = temp2[12:15] + temp2[22:24]  # 卖五价格，sell_5p[4]是卖五价
+            #         sell_5v = temp2[15:18] + temp2[24:26]  # 卖五量，sell_5v[4] 卖五量
+
             if Stockname[0] in ['5', '6']:
-                errinfo, count, result = clientHq.GetSecurityQuotes([(1,Stockname)])
+                errinfo, count, result = clientHq.GetSecurityQuotes([(1, Stockname)])
             if Stockname[0] in ['0', '1', '2', '3']:
-                errinfo, count, result = clientHq.GetSecurityQuotes([(0,Stockname)])
+                errinfo, count, result = clientHq.GetSecurityQuotes([(0, Stockname)])
             if errinfo != "":
-                print >>f,errinfo
-
+                print >> f, errinfo
             else:
-                
-                temp1=result.split("\n")
-                temp2 = temp1[1].split('\t')
-                
-                Nowprice = float(temp2[3])  # nQsid=36, temp2[5]为当前价
-                Yesprice = float(temp2[4])  # 昨收价
-               
-                buy_5p = [temp2[17]] + [temp2[21]]+[temp2[25]]+ [temp2[29]]+ [temp2[33]]  # 买一至买五的价格，buy_5p[0]是买一价
-                buy_5v = [temp2[19]] + [temp2[23]]+[temp2[27]]+ [temp2[31]]+ [temp2[35]]  # 买五量，string，buy_5v[0]是买一量
-                sell_5p = [temp2[18]] + [temp2[22]]+[temp2[26]]+ [temp2[30]]+ [temp2[34]]  # 卖五价格，sell_5p[4]是卖五价
-                sell_5v = [temp2[20]] + [temp2[24]]+[temp2[28]]+ [temp2[32]]+ [temp2[36]]  # 卖五量，sell_5v[4] 卖五量
-                
-                print >>f,'-------------------------------------------------------'
-                print >>f,buy_5p
-                print >>f,buy_5v
-                print >>f,sell_5p
-                print >>f,sell_5v
-            
-            
-            
-            
-            
-            
-            '''
-            status, content = client.GetQuote((Stockname))
-            if status < 0:
-                print "error_d: " + content.decode('GBK')
-            else:
-                # print content.decode('GBK')
-                temp1 = content.split('\n')
-                temp2 = temp1[1].split('\t')
-                Nowprice = float(temp2[5])  # nQsid=36, temp2[5]为当前价
-                Yesprice = float(temp2[2])  # 昨收价
-                if nQsid in [36, 16, 32, 28]:
-                    buy_5p = temp2[6:11]  # 买一至买五的价格，string,[0]是买一价
-                    buy_5v = temp2[11:16]  # 买五量，string，[0]是买一量
-                    sell_5p = temp2[16:21]  # 卖五价格，string,[4]是卖五价
-                    sell_5v = temp2[21:26]  # 卖五量，string
-                if nQsid == 43:  # 华林
-                    buy_5p = temp2[6:9] + temp2[18:20]  # 买一至买五的价格，buy_5p[0]是买一价
-                    buy_5v = temp2[9:12] + temp2[20:22]  # 买五量，string，buy_5v[0]是买一量
-                    sell_5p = temp2[12:15] + temp2[22:24]  # 卖五价格，sell_5p[4]是卖五价
-                    sell_5v = temp2[15:18] + temp2[24:26]  # 卖五量，sell_5v[4] 卖五量
-              '''
 
-                    
-                    
-                    
-                    
+                temp1 = result.split("\n")
+                temp2 = temp1[1].split('\t')
+
+                Nowprice = float(temp2[3])
+                Yesprice = float(temp2[4])
+
+                buy_5p = [temp2[17]] + [temp2[21]] + [temp2[25]] + [temp2[29]] + [temp2[33]]  # 买一至买五的价格，buy_5p[0]是买一价
+                buy_5v = [temp2[19]] + [temp2[23]] + [temp2[27]] + [temp2[31]] + [temp2[35]]  # 买五量，string，buy_5v[0]是买一量
+                sell_5p = [temp2[18]] + [temp2[22]] + [temp2[26]] + [temp2[30]] + [temp2[34]]  # 卖五价格，sell_5p[4]是卖五价
+                sell_5v = [temp2[20]] + [temp2[24]] + [temp2[28]] + [temp2[32]] + [temp2[36]]  # 卖五量，sell_5v[4] 卖五量
+
             Sendprice = Nowprice  # 发出指令默认价格为当前价，程序后面会调整为买五或卖五。
 
             if Stockname in StockValue.iloc[:, 0].values:
