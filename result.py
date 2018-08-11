@@ -54,6 +54,8 @@ while 1:
         iftrade = 1
     elif nowtime[3] == 11 and nowtime[4] < 30:
         iftrade = 1
+    elif nowtime[3] == 14 and nowtime[4] > 57:
+        iftrade = 0
     if iftrade == 0:
         print "Non Trading time, waiting ..."
         print time.strftime("%Y%m%d %H:%M:%S", time.localtime())
@@ -257,6 +259,7 @@ while 1:
                 errinfo, count, result = clientHq.GetSecurityQuotes([(0,Stockname)])
             if errinfo != "":
                 print >>f,errinfo
+
             else:
                 
                 temp1=result.split("\n")
@@ -520,7 +523,7 @@ while 1:
         SL4 = pd.merge(S_L_index, SL4, how='outer', on='stocknum')
         indexhere = indexhere - 1
     if account_num > 3:  # 产品
-        SL4.columns = ['stocknum', 'QD_ZT', 'H3_HL', 'H6_ZS', 'H9_ZT', 'H6_ZT', 'H9_ZX', 'H6_GD']
+        SL4.columns = ['stocknum', 'H3_HL', 'H6_ZS', 'H9_ZT', 'H6_ZT', 'H9_ZX', 'H6_GD']
     if account_num <= 3:  # 委外
         SL4.columns = ['stocknum', 'DM_ZT', 'RY_ZT']
     # exlist = list(SL4.stocknum)
