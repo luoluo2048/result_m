@@ -33,7 +33,7 @@ account_num = len(list(Account.nQsid))
 
 #读取行情ip地址和端口
 HostHq = pd.read_excel("HostHq.xlsx")
-
+HostHq_num = len(list(HostHq.port))
 
 
 #如果增加账户，需要更改这里
@@ -241,7 +241,20 @@ while 1:
     TradeX.OpenTdx(14, "6.40", 12, 0)
     
     #HostHq=["221.231.141.60", "7709"]
-    clientHq = TradeX.TdxHq_Connect(HostHq.iloc[0,0], int(HostHq.iloc[0,1]))
+    index_host = 0
+    while index_host < HostHq_num:
+        sHost = HostHq.iloc[index_host, 0]
+        nPort = int(HostHq.iloc[index_host, 1])
+        try:
+            clientHq = TradeX.TdxHq_Connect(sHost, nPort)
+        except TradeX.TdxHq_error, e:
+            print >> f, index_host
+            print >> f, "switch to next HostHq"
+            index_host = index_host + 1
+            continue
+        break
+    
+    #clientHq = TradeX.TdxHq_Connect(HostHq.iloc[0,0], int(HostHq.iloc[0,1]))
 
     StockValue_all = DataFrame(np.zeros((1, 5)), index=['a'], columns=['stocknum', 'ratio', 'asset', 'amount', 'account'])
     # StockValue_all用于存储各个账号的持
