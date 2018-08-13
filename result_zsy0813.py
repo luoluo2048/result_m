@@ -28,7 +28,7 @@ managernum=len(managerslist)
 
 
 # 此处读取account.xlsx文件里面的账户信息。
-Account = pd.read_excel("account_weiwai.xlsx")
+Account = pd.read_excel("account.xlsx")
 account_num = len(list(Account.nQsid))
 
 #读取行情ip地址和端口
@@ -117,6 +117,23 @@ while 1:
             Stock_buyeach=pd.concat([Stock_buyeach,Stock_buy_zt0],ignore_index=True) 
             for i in range(0,len(Stock_buyeach)):
                 Stock_buyeach.manager.iloc[i]=manager
+                SHSZ=Stock_buyeach.stockname.iloc[i].split('.')[1]
+                SHSZstockname=Stock_buyeach.stockname.iloc[i].split('.')[0]
+                if SHSZstockname[0] in ['5','6']:
+                    if SHSZ!='SH':
+                        print >>result_log,str(manager)+' :SH or SZ is wrong!!'
+                        print '--------------------------------------------'
+                        print str(manager)+' :SH or SZ is wrong!!'
+                        Stock_buyeach=pd.DataFrame(columns=Stock_buy_columns) 
+                        break
+                if SHSZstockname[0] in ['0', '1', '2', '3']:
+                    if SHSZ!='SZ':
+                        print >>result_log,str(manager)+' :SH or SZ is wrong!!'
+                        print '--------------------------------------------'
+                        print str(manager)+' :SH or SZ is wrong!!'
+                        Stock_buyeach=pd.DataFrame(columns=Stock_buy_columns)  
+                        break
+                
             #Stock_buy是股票的下单目标数量DataFrame
             Stock_buy=pd.concat([Stock_buy,Stock_buyeach],ignore_index=True) 
         
@@ -314,9 +331,9 @@ while 1:
         status, content = client.QueryData(nCategory)
         if status < 0:
             #print >> f, "error_b: " + str(content)
-            print "error_b" + content.decode('GBK')
+            print >>result_log,"error_b" + content.decode('GBK').encode('utf8')
         else:
-            print content.decode('GBK')
+            print >>result_log,content.decode('GBK').encode('utf8')
             temp1 = content.split('\n')
             temp2 = temp1[1].split('\t')
             if nQsid == 36:  # 中泰，查询到的是总资产
@@ -422,9 +439,9 @@ while 1:
                 status, content = client.CancelOrder(market, order_index)
                 if status < 0:
                     #print >> f, "error_g: " + sAccountNo
-                    print "error_g" + sAccountNo
+                    print >>result_log,"error_g" + sAccountNo
                 else:
-                    print content.decode('GBK')
+                    print >>result_log,content.decode('GBK').encode('utf8')
         #########################################################################################
             
             
@@ -614,7 +631,7 @@ while 1:
             if Sendamount > 0 and Stockname[0] in ['5', '6']:
                 sTradeAccountNo = sTradeAccountNoshs[index]
                 status, content = client.SendOrder(buysell, 0, sTradeAccountNo, Stockname, Sendprice, int(Sendamount))
-                content = content.decode('GBK')
+                content = content.decode('GBK').encode('utf8')
                 if status < 0:
                     print >> result_log, "error in SendOrder "
                     print >> result_log,content
@@ -639,10 +656,10 @@ while 1:
             if Sendamount > 0 and Stockname[0] in ['0', '1', '2', '3']:
                 status, content = client.SendOrder(buysell, 0, sTradeAccountNosz, Stockname, Sendprice, int(Sendamount))
                 
-                content = content.decode('GBK')
+                content = content.decode('GBK').encode('utf8')
                 if status < 0:
                     print >> result_log, "error in SendOrder "
-                   
+                    print >> result_log,content
                     print "error in SendOrder "
                     print content
                 else:
