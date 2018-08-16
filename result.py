@@ -415,6 +415,7 @@ while 1:
             if Sendamount > 0 and Stockname[0] in ['5', '6']:
                 sTradeAccountNo = sTradeAccountNoshs[index]
                 status, content = client.SendOrder(buysell, 0, sTradeAccountNo, Stockname, Sendprice, Sendamount)
+                time.sleep(1)
                 content = content.decode('GBK')
                 if status < 0:
                     print >> f, "error_e: "
@@ -427,6 +428,7 @@ while 1:
 
             if Sendamount > 0 and Stockname[0] in ['0', '1', '2', '3']:
                 status, content = client.SendOrder(buysell, 0, sTradeAccountNosz, Stockname, Sendprice, Sendamount)
+                time.sleep(1)
                 content = content.decode('GBK')
                 if status < 0:
                     print >> f, "error_f: "
