@@ -294,6 +294,7 @@ while 1:
                 errinfo, count, result = clientHq.GetSecurityQuotes([(0, Stockname)])
             if errinfo != "":
                 print >> f, errinfo
+                continue  # 如果这里查询到错误，默认的就Nowprice=0，从而后面Nowprice当分母时报错。
             else:
 
                 temp1 = result.split("\n")
