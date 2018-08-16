@@ -28,7 +28,7 @@ managernum=len(managerslist)
 
 
 # 此处读取account.xlsx文件里面的账户信息。
-Account = pd.read_excel("account_weiwai.xlsx")
+Account = pd.read_excel("account.xlsx")
 account_num = len(list(Account.nQsid))
 
 #读取行情ip地址和端口
