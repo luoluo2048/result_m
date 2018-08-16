@@ -495,6 +495,9 @@ while 1:
                 temp2 = temp1[1].split('\t')
                 
                 Nowprice = float(temp2[3])  # nQsid=36, temp2[5]为当前价
+                if Nowprice < 0.01:
+                    print >> result_log, "\n Nowprice = 0, and continue to next stock"
+                    continue  #如果查询到的nowprice=0，后面除法计算股票数量时会报错。出现=0，则跳出这轮循环。
                 Yesprice = float(temp2[4])  # 昨收价
                
                 buy_5p = [temp2[17]] + [temp2[21]]+[temp2[25]]+ [temp2[29]]+ [temp2[33]]  # 买一至买五的价格，buy_5p[0]是买一价
@@ -631,6 +634,7 @@ while 1:
             if Sendamount > 0 and Stockname[0] in ['5', '6']:
                 sTradeAccountNo = sTradeAccountNoshs[index]
                 status, content = client.SendOrder(buysell, 0, sTradeAccountNo, Stockname, Sendprice, int(Sendamount))
+                time.sleep(1)
                 content = content.decode('GBK').encode('utf8')
                 if status < 0:
                     print >> result_log, "error in SendOrder "
@@ -655,7 +659,7 @@ while 1:
 
             if Sendamount > 0 and Stockname[0] in ['0', '1', '2', '3']:
                 status, content = client.SendOrder(buysell, 0, sTradeAccountNosz, Stockname, Sendprice, int(Sendamount))
-                
+                time.sleep(1)
                 content = content.decode('GBK').encode('utf8')
                 if status < 0:
                     print >> result_log, "error in SendOrder "
@@ -862,7 +866,7 @@ while 1:
 
         Sendamount_all = Sendamount_all + Sendamount
         index = index + 1
-        # time.sleep(sleeptime)  # 稍后，登录下一个账号。
+        time.sleep(11)  # 稍后，登录下一个账号。
         del client
 
     '''
@@ -1040,10 +1044,10 @@ while 1:
     timeindex = timeindex + 1
     result_log.close()
     TradeX.CloseTdx()
-    if account_num == 7:
+    if account_num == 6:
         time.sleep(sleeptime)
     if account_num == 2:
-        time.sleep(sleeptime*4)
+        time.sleep(15)
     endtime = datetime.datetime.now()
     print '-----program runtime is: ----------'
     print (endtime - starttime).seconds
