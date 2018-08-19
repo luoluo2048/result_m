@@ -40,7 +40,7 @@ f.close()
 Weituo_here = pd.read_excel("./result_weituo.xlsx")
 for inx in range(0, len(Weituo_here.stockname)):
     Weituo_here.iat[inx, 0] = Weituo_here.stockname[inx].split('.')[0]  # 把.SZ和.SH的字样去掉.
-	# Weituo_here.iat[inx, 0] = Weituo_here.stockname[inx][0:6]
+    # Weituo_here.iat[inx, 0] = Weituo_here.stockname[inx][0:6]
     Weituo_here.iat[inx, 6] = Weituo_here.account[inx].split('.')[0]  # 把account的.S字样去掉.
 Weituo_ins = pd.DataFrame({'stockname': ['000001.SZ'], 'bianhao': ['100'], 'amount': [0], 'money': [0.0], 'price': [0.0], 'buysell': [0], 'account': ['1092.S'], 'time': ['11:08']})
 Weituo_ins = Weituo_ins[['stockname', 'bianhao', 'amount', 'money', 'price', 'buysell', 'account', 'time']]
@@ -61,7 +61,7 @@ while 1:
     if iftrade == 0:
         print "Non Trading time, waiting ..."
         print time.strftime("%Y%m%d %H:%M:%S", time.localtime())
-        time.sleep(30)
+        time.sleep(10)
         continue  # 如果非交易时间测试下单程序，需要#掉这个continue语句。
 
     Stock_buy = read_csv("./result_send.csv", dtype={'stockname': str})
@@ -514,6 +514,7 @@ while 1:
         index = index + 1
         # time.sleep(sleeptime)  # 稍后，登录下一个账号。
         del client
+        time.sleep(sleeptime)
 
     S_L = StockValue_all
     SL1 = S_L.sort_values(['stocknum'])
@@ -576,5 +577,5 @@ while 1:
     if account_num == 6:
         time.sleep(sleeptime)
     if account_num == 2:
-        time.sleep(sleeptime*6)
+        time.sleep(sleeptime*4)
     # 账户少的程序组，等一等账户多的程序组。
