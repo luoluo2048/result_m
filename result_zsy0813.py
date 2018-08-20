@@ -866,7 +866,6 @@ while 1:
 
         Sendamount_all = Sendamount_all + Sendamount
         index = index + 1
-        
         del client
         time.sleep(11)  # 稍后，登录下一个账号。
 
