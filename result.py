@@ -52,11 +52,11 @@ while 1:
     nowtime = time.localtime()  # 判断是否是交易时间
     if nowtime[3] == 9 and nowtime[4] > 31:
         iftrade = 1
-    elif nowtime[3] in [10, 13, 14]:
+    if nowtime[3] in [10, 13, 14]:
         iftrade = 1
-    elif nowtime[3] == 11 and nowtime[4] < 30:
+    if nowtime[3] == 11 and nowtime[4] < 30:
         iftrade = 1
-    elif nowtime[3] == 14 and nowtime[4] > 57:
+    if nowtime[3] == 14 and nowtime[4] > 57:
         iftrade = 0
     if iftrade == 0:
         print "Non Trading time, waiting ..."
@@ -99,6 +99,8 @@ while 1:
         except TradeX.TdxHq_error, e:
             print >> f, index_host
             print >> f, "switch to next HostHq"
+            print "switch to nest HostHq"
+            time.sleep(1)
             index_host = index_host + 1
             continue
         break
@@ -239,7 +241,7 @@ while 1:
                 status, content = client.CancelOrder(market, order_index)
                 if status < 0:
                     print >> f, "error_g: " + sAccountNo
-                    print "error_g" + sAccountNo
+                    print "error_g, error of cancel order" + sAccountNo
                 else:
                     print content.decode('GBK')
 
@@ -527,7 +529,7 @@ while 1:
         SL4 = pd.merge(S_L_index, SL4, how='outer', on='stocknum')
         indexhere = indexhere - 1
     if account_num > 3:  # 产品
-        SL4.columns = ['stocknum', 'H3_HL', 'H6_ZS', 'H9_ZT', 'H6_ZT', 'H9_ZX', 'H6_GD']
+        SL4.columns = ['stocknum', 'H3_HL', 'H9_ZT', 'H6_ZT', 'H9_ZX', 'H6_GD']
     if account_num <= 3:  # 委外
         SL4.columns = ['stocknum', 'DM_ZT', 'RY_ZT']
     # exlist = list(SL4.stocknum)
@@ -574,7 +576,7 @@ while 1:
     timeindex = timeindex + 1
     f.close()
     TradeX.CloseTdx()
-    if account_num == 6:
+    if account_num == 5:
         time.sleep(sleeptime)
     if account_num == 2:
         time.sleep(sleeptime*4)
