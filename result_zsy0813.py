@@ -866,8 +866,8 @@ while 1:
 
         Sendamount_all = Sendamount_all + Sendamount
         index = index + 1
-        time.sleep(11)  # 稍后，登录下一个账号。
         del client
+        time.sleep(11)  # 稍后，登录下一个账号。
 
     '''
     S_L = StockValue_all
