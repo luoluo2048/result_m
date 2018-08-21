@@ -88,11 +88,11 @@ while 1:
     nowtime = time.localtime()  # 判断是否是交易时间
     if nowtime[3] == 9 and nowtime[4] > 31:
         iftrade = 1
-    elif nowtime[3] in [10, 13, 14]:
+    if nowtime[3] in [10, 13, 14]:
         iftrade = 1
-    elif nowtime[3] == 11 and nowtime[4] < 30:
+    if nowtime[3] == 11 and nowtime[4] < 30:
         iftrade = 1
-    elif nowtime[3] == 14 and nowtime[4] > 57:
+    if nowtime[3] == 14 and nowtime[4] > 57:
         iftrade = 0
     if iftrade == 0:
         print "Non Trading time, waiting ..."
